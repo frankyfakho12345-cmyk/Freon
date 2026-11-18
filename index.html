@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>FREON AI — Unified Intelligence Workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ==========================================
+       1. AUTHENTICATION OVERLAY
+       ========================================== -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-ambient-glow"></div>
+    <div class="auth-card" id="authCard">
+      <div class="auth-brand-top">
+        <div class="brand-emblem">
+          <svg width="26" height="26" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#d97757" stroke-width="6" stroke-dasharray="50 22" stroke-linecap="round"/>
+            <circle cx="50" cy="50" r="26" fill="none" stroke="#10b981" stroke-width="5" stroke-dasharray="30 22" stroke-linecap="round"/>
+            <polygon points="50,30 56,44 70,50 56,56 50,70 44,56 30,50 44,44" fill="#ffffff"/>
+          </svg>
+        </div>
+        <span class="auth-role-pill" id="authRoleBadge">CUSTOMER PORTAL</span>
+      </div>
+
+      <!-- PENGUMUMAN FOUNDER DI HALAMAN LOGIN JIKA ADA -->
+      <div class="auth-broadcast-box" id="authBroadcastBox" style="display:none;">
+        <div class="broadcast-tag">📢 INFO PENTING DARI FOUNDER</div>
+        <div id="authBroadcastText"></div>
+        <a id="authBroadcastLink" href="#" target="_blank" class="broadcast-link-btn" style="display:none;">🔗 Buka Link Update Baru</a>
+      </div>
+
+      <h2 class="auth-heading" id="authTitle">Masuk ke<span class="auth-title-bottom">Freon AI</span></h2>
+      <p class="auth-sub" id="authSubtitle">Gunakan Username atau UID akun customer Anda</p>
+
+      <div class="auth-error-box" id="authErrorBox"></div>
+
+      <form id="authForm" class="auth-form">
+        <div class="form-group" id="authFullNameGroup" style="display:none;">
+          <label for="authFullName">Nama Lengkap</label>
+          <input type="text" id="authFullName" placeholder="Contoh: Franky Dimas" autocomplete="name" />
+        </div>
+
+        <div class="form-group" id="authUsernameGroup">
+          <label for="authUsername" id="authUserLabel">Username / UID Customer</label>
+          <input type="text" id="authUsername" placeholder="Masukkan username atau UID..." autocomplete="username" />
+        </div>
+
+        <div class="form-group">
+          <label for="authPassword">Password</label>
+          <input type="password" id="authPassword" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+
+        <div class="form-group" id="authActivationGroup" style="display:none;">
+          <label for="authActivationCode">Kode Aktivasi Pendaftaran</label>
+          <div class="activation-live-bar">
+            <span>Kode Aktif: <strong id="registerLiveCodeText">Memuat...</strong></span>
+            <button type="button" class="mini-chip-btn" onclick="fillActivationCodeToInput()">Gunakan Kode</button>
+          </div>
+          <input type="text" id="authActivationCode" placeholder="Masukkan kode aktivasi..." />
+        </div>
+
+        <button type="submit" class="btn-primary-full" id="authSubmitBtn">Masuk sebagai Customer</button>
+      </form>
+
+      <div class="auth-footer-links">
+        <div id="customerRegisterToggle">
+          Belum punya akun customer? <button type="button" class="inline-link-btn cyan" onclick="switchAuthMode('register')">Daftar di sini</button>
+        </div>
+        <div id="adminSwitchToggle">
+          Pengelola sistem? <button type="button" class="inline-link-btn amber" onclick="switchAuthMode('admin')">Login ke Akun Founder / Co-Founder</button>
+        </div>
+        <div class="auth-wa-help">
+          <button type="button" class="wa-ghost-btn" onclick="openWhatsAppHelp()">💬 Bantuan Admin via WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       2. MAIN WORKSPACE SHELL
+       ========================================== -->
+  <div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobileSidebar()"></div>
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-lockup" onclick="createNewSession('general')">
+        <div class="brand-icon-mini">
+          <svg width="20" height="20" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#d97757" stroke-width="7" stroke-dasharray="55 20"/>
+            <polygon points="50,28 56,44 72,50 56,56 50,72 44,56 28,50 44,44" fill="#f8fafc"/>
+          </svg>
+        </div>
+        <div class="brand-text-wrap">
+          <span class="brand-name">FREON AI</span>
+          <span class="brand-ver">2.1 STUDIO</span>
+        </div>
+      </div>
+      <button type="button" class="icon-square-btn" onclick="toggleSidebar()" title="Tutup/Buka Sidebar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      </button>
+    </div>
+
+    <div class="sidebar-cta-wrap">
+      <button type="button" class="new-chat-btn" onclick="createNewSession('general')">
+        <span>＋ Obrolan Baru</span>
+        <kbd>⌘K</kbd>
+      </button>
+    </div>
+
+    <!-- QUICK DASHBOARD MODULES -->
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">WORKSPACE & STUDIO</div>
+      <div class="module-nav-list">
+        <button type="button" class="module-item active" data-mod="general" onclick="selectModule('general', true)">
+          <span class="mod-ico">✦</span><span>Chat Utama</span>
+        </button>
+        <button type="button" class="module-item" data-mod="agent" onclick="selectModule('agent', true)">
+          <span class="mod-ico">🤖</span><span>AI Agent Otonom</span>
+        </button>
+        <button type="button" class="module-item" data-mod="coding" onclick="selectModule('coding', true)">
+          <span class="mod-ico">💻</span><span>Web, Game & Code</span>
+        </button>
+        <button type="button" class="module-item" data-mod="office" onclick="selectModule('office', true)">
+          <span class="mod-ico">📑</span><span>Word (All Fonts), PPTX & Excel</span>
+        </button>
+        <button type="button" class="module-item" data-mod="image" onclick="selectModule('image', true)">
+          <span class="mod-ico">🎨</span><span>Image & Logo Studio</span>
+        </button>
+        <button type="button" class="module-item" data-mod="video" onclick="selectModule('video', true)">
+          <span class="mod-ico">🎬</span><span>Video & Tugas Video</span>
+        </button>
+        <button type="button" class="module-item" data-mod="music" onclick="selectModule('music', true)">
+          <span class="mod-ico">🎵</span><span>Music Composer</span>
+        </button>
+        <button type="button" class="module-item" data-mod="finance" onclick="selectModule('finance', true)">
+          <span class="mod-ico">💰</span><span>Keuangan & Jadwal</span>
+        </button>
+        <button type="button" class="module-item" data-mod="research" onclick="selectModule('research', true)">
+          <span class="mod-ico">🌐</span><span>Riset & Tutor</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PREMIUM TIERS & SPECIAL ACTIONS -->
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">FITUR & PAKET</div>
+      <div class="tier-nav-grid">
+        <button type="button" class="tier-pill-btn" onclick="openFeaturesModal('pintar')">
+          <span>✨ 52 Fitur AI</span>
+        </button>
+        <button type="button" class="tier-pill-btn call-highlight" onclick="openAnimeVideoCall()">
+          <span>📹 Call Anime</span>
+        </button>
+        <button type="button" class="tier-pill-btn" onclick="openTierCategory('exclusive')">
+          <span>💎 Eksklusif</span>
+          <span id="sidebarExclLock">🔒</span>
+        </button>
+        <button type="button" class="tier-pill-btn" onclick="openTierCategory('premium')">
+          <span>👑 Premium</span>
+          <span id="sidebarPremLock">🔒</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- HISTORY TABS -->
+    <div class="sidebar-history-wrap">
+      <div class="history-tabs">
+        <button type="button" class="hist-tab active" id="tabMyHistory" onclick="switchHistoryTab('mine')">Riwayat Saya</button>
+        <button type="button" class="hist-tab" id="tabGlobalHistory" onclick="switchHistoryTab('global')">Live Global</button>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </div>
+
+    <!-- SIDEBAR USER DASHBOARD FOOTER -->
+    <div class="sidebar-footer">
+      <div class="quota-strip" id="adminOnlyQuotaStrip" style="display:none;">
+        <span>Status Kuota</span>
+        <strong id="sidebarTokenDisplay">∞ Unlimited</strong>
+      </div>
+      <div class="user-profile-card">
+        <div class="user-avatar" id="sidebarUserAvatar">F</div>
+        <div class="user-meta">
+          <div class="user-name" id="sidebarUserName">Pengguna</div>
+          <div class="user-role" id="sidebarUserRole">Customer</div>
+        </div>
+        <div class="user-card-actions">
+          <button type="button" class="mini-icon-btn" onclick="viewMemories()" title="Cloud Memory">🧠</button>
+          <button type="button" class="mini-icon-btn" onclick="openWhatsAppHelp()" title="Bantuan WhatsApp">💬</button>
+          <button type="button" class="mini-icon-btn danger" onclick="logoutUser()" title="Keluar">⏻</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT WORKSPACE -->
+  <main class="main-workspace" id="mainApp">
+    <!-- FOUNDER GLOBAL BROADCAST BANNER -->
+    <div class="founder-broadcast-banner" id="globalBroadcastBanner" style="display:none;">
+      <div class="broadcast-left">
+        <span class="broadcast-pill">📢 PENGUMUMAN FOUNDER</span>
+        <span id="globalBroadcastMessage">-</span>
+      </div>
+      <div class="broadcast-right">
+        <a id="globalBroadcastLinkBtn" href="#" target="_blank" class="broadcast-cta-link" style="display:none;">🔗 Buka Link Baru</a>
+        <button type="button" class="broadcast-dismiss-btn" onclick="dismissBroadcastBanner()" title="Sembunyikan">✕</button>
+      </div>
+    </div>
+
+    <!-- IMPERSONATE BANNER -->
+    <div class="impersonate-banner" id="impersonateBanner" style="display:none;">
+      <span>👁️ Mode Pratinjau Akun Customer: <strong id="impersonateTargetName">-</strong></span>
+      <button type="button" class="banner-exit-btn" onclick="exitImpersonateCustomer()">Kembali ke Akun Founder</button>
+    </div>
+
+    <!-- TOP GLASS HEADER -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+        <div class="model-selector-pill">
+          <span class="pulse-dot"></span>
+          <select id="modelSelect" onchange="onEngineChange()">
+            <option value="hybrid_1_1">FREON 1.1 Hybrid</option>
+            <option value="flash_1_1">FREON 1.1 Flash</option>
+            <option value="sonic_2_1">FREON 2.1 Sonic</option>
+            <option value="multi_council">👑 Multi-AI (3 Model)</option>
+          </select>
+        </div>
+
+        <!-- SELECTOR FONT MICROSOFT WORD -->
+        <div class="model-selector-pill" title="Jenis Tulisan (Font) Microsoft Word untuk Dokumen">
+          <span style="font-size:12px;">🔤</span>
+          <select id="docFontSelect" onchange="onDocFontChange()">
+            <option value="Times New Roman">Font: Times New Roman</option>
+            <option value="Calibri">Font: Calibri</option>
+            <option value="Arial">Font: Arial</option>
+            <option value="Cambria">Font: Cambria</option>
+            <option value="Georgia">Font: Georgia</option>
+            <option value="Garamond">Font: Garamond</option>
+            <option value="Tahoma">Font: Tahoma</option>
+            <option value="Verdana">Font: Verdana</option>
+            <option value="Trebuchet MS">Font: Trebuchet MS</option>
+            <option value="Segoe UI">Font: Segoe UI</option>
+            <option value="Palatino Linotype">Font: Palatino Linotype</option>
+            <option value="Book Antiqua">Font: Book Antiqua</option>
+            <option value="Century Gothic">Font: Century Gothic</option>
+            <option value="Courier New">Font: Courier New</option>
+            <option value="Consolas">Font: Consolas</option>
+            <option value="Lucida Sans">Font: Lucida Sans</option>
+            <option value="Impact">Font: Impact</option>
+            <option value="Comic Sans MS">Font: Comic Sans MS</option>
+          </select>
+        </div>
+
+        <span class="active-mod-chip" id="activeModuleBadge">✦ FREON Chat</span>
+      </div>
+
+      <div class="topbar-right">
+        <!-- HANYA TAMPIL UNTUK FOUNDER UTAMA -->
+        <button type="button" class="top-action-btn admin-crown-btn" id="founderTrainerTopBtn" style="display:none;" onclick="openTrainerModal()" title="Khusus Founder Utama: Latih Teks & Gambar AI">
+          <span>🎓</span><span class="hide-mobile">Latih AI (Founder)</span>
+        </button>
+        <button type="button" class="top-action-btn" onclick="openAnimeVideoCall()" title="Video Call Naruto & Hinata">
+          <span>📹</span><span class="hide-mobile">Video Call</span>
+        </button>
+        <button type="button" class="top-action-btn" onclick="openFeaturesModal('pintar')" title="Katalog 52 Fitur">
+          <span>⚡</span><span class="hide-mobile">52 Fitur</span>
+        </button>
+        <button type="button" class="top-action-btn artifact-toggle" id="artifactToggleBtn" onclick="toggleArtifactDrawer()" title="Claude-Style Artifact Workspace">
+          <span>◫</span><span class="hide-mobile">Artifact</span>
+        </button>
+        <button type="button" class="top-action-btn admin-crown-btn" id="adminPanelTopBtn" style="display:none;" onclick="openAdminModal()">
+          <span>👑</span><span class="hide-mobile">Control Panel</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- SPLIT BODY: CHAT STREAM + ARTIFACT DRAWER -->
+    <div class="workspace-split">
+      <section class="chat-column">
+        <div class="chat-container" id="chatContainer"></div>
+
+        <!-- FLOATING COMPOSER -->
+        <div class="composer-dock">
+          <div class="composer-box">
+            <div class="attachment-preview" id="attachmentPreview" style="display:none;">
+              <span id="attachmentLabel">📎 File siap</span>
+              <button type="button" class="clear-att-btn" onclick="clearAttachment()">✕</button>
+            </div>
+
+            <div class="composer-input-row">
+              <div class="plus-menu-wrap">
+                <button type="button" class="composer-tool-btn" onclick="togglePlusMenu(event)" title="Tambah Lampiran / Alat">＋</button>
+                <div class="plus-popover" id="plusPopover">
+                  <button type="button" onclick="triggerUpload()">📎 Upload Gambar / PDF / Word</button>
+                  <button type="button" onclick="triggerVideoTaskUpload()">🎬 Kirim Tugas Menggunakan Video</button>
+                  <button type="button" onclick="quickSwitchModule('office', 'Buatkan dokumen Word (.doc) resmi menggunakan font ' + document.getElementById('docFontSelect').value + ' tentang ')">📝 Buat Dokumen Word (All Fonts)</button>
+                  <button type="button" onclick="quickSwitchModule('office', 'Buatkan presentasi PowerPoint (.pptx) 8 slide tentang ')">📊 Buat Presentasi .PPTX</button>
+                  <button type="button" onclick="quickSwitchModule('image', 'Buatkan gambar ')">🎨 Generate Gambar HD</button>
+                  <button type="button" onclick="quickSwitchModule('coding', 'Buatkan aplikasi web interaktif dalam satu file HTML lengkap untuk ')">💻 Buat Web / Game HTML</button>
+                </div>
+              </div>
+
+              <input type="text" id="userInput" placeholder="Tanya apa saja, buat dokumen Word semua font, atau bangun aplikasi..." autocomplete="off" />
+
+              <button type="button" class="composer-tool-btn" id="micBtn" onclick="toggleVoiceInput()" title="Input Suara">🎙️</button>
+              <button type="button" class="send-action-btn" id="sendBtn" onclick="handleSendOrStop()" title="Kirim Pesan">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </div>
+
+            <div class="composer-meta-bar">
+              <span>Font Word Aktif: <strong id="activeFontFooterLabel" style="color:#fdba74;">Times New Roman</strong> • Mendukung .doc, .pptx, .xls & video</span>
+              <span class="kbd-hint">Enter untuk kirim</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CLAUDE-STYLE ARTIFACT / SANDBOX PANEL -->
+      <aside class="artifact-drawer" id="artifactDrawer">
+        <div class="artifact-header">
+          <div class="artifact-title-group">
+            <span class="artifact-dot"></span>
+            <strong id="artifactTitle">FREON Artifact Canvas</strong>
+          </div>
+          <div class="artifact-controls">
+            <button type="button" class="mini-chip-btn" onclick="loadLatestCodeToArtifact()">🔄 Muat Kode Terbaru</button>
+            <button type="button" class="mini-chip-btn" onclick="toggleArtifactDrawer()">✕</button>
+          </div>
+        </div>
+        <div class="artifact-body" id="artifactBody">
+          <div class="artifact-empty-state">
+            <div style="font-size:32px;margin-bottom:8px;">◫</div>
+            <h4>Claude-Style Live Artifact</h4>
+            <p>Minta AI membuat website, game HTML, kalkulator, atau animasi, lalu klik <strong>Muat Kode Terbaru</strong> untuk menjalankannya di panel samping ini.</p>
+          </div>
+          <iframe id="artifactIframe" class="artifact-iframe" sandbox="allow-scripts" style="display:none;"></iframe>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- HIDDEN FILE INPUTS -->
+  <input type="file" id="fileInput" style="display:none;" onchange="handleFileUpload(event)" />
+  <input type="file" id="videoTaskInput" accept="video/*" style="display:none;" onchange="handleVideoTaskUpload(event)" />
+
+  <!-- ==========================================
+       3. MODALS
+       ========================================== -->
+  <!-- FOUNDER-ONLY MULTIMODAL AI TRAINING STUDIO MODAL -->
+  <div class="modal-overlay" id="trainerModalOverlay">
+    <div class="modal-card modal-xl">
+      <div class="modal-header">
+        <div>
+          <h3>🎓 FREON Frontier Multimodal Training Lab (Khusus 5 Founder Utama)</h3>
+          <p class="modal-sub">Latih penalaran teks, pengenalan gambar visual, & gaya generasi gambar AI sekelas model Frontier mahal</p>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeTrainerModal()">✕</button>
+      </div>
+
+      <!-- 1. ARSITEKTUR PENALARAN & PRESET FRONTIER -->
+      <div class="admin-section-card" style="border-color:rgba(217,119,87,0.4);">
+        <h4>🧠 1. Arsitektur Penalaran & Suntik Paket Latihan Kelas Frontier</h4>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;color:#6ee7b7;">
+            <input type="checkbox" id="deepRefinementToggle" onchange="toggleDeepRefinement(this.checked)" style="width:18px;height:18px;accent-color:#10b981;" />
+            <span>Claude-Style Self-Refinement Loop (Audit & Perbaikan Draf Otomatis)</span>
+          </label>
+          <button type="button" class="tbl-btn prem-on" onclick="injectFrontierTrainingPack()">⚡ Suntik 4 Paket Latihan Kelas Mahal (Hukum, Coding, Bisnis & Visual)</button>
+        </div>
+      </div>
+
+      <!-- 2. LATIH GENERASI GAMBAR & GAYA VISUAL AI -->
+      <div class="admin-section-card" style="border-color:rgba(56,189,248,0.4);">
+        <h4>🎨 2. Kalibrasi & Latih Gaya Generasi Gambar AI (Image Generation Alignment)</h4>
+        <p style="font-size:12px;color:#a1a1aa;margin-bottom:8px;">
+          Setiap gambar yang dibuat oleh AI (`buatGambar`) akan otomatis memadukan gaya visual terlatih di bawah ini agar hasilnya tajam, sinematik, dan tidak murahan.
+        </p>
+        <form id="imageStyleTrainForm" class="inline-admin-form">
+          <input type="text" id="trainedImageStyleInput" placeholder="Contoh: ultra-detailed anime & concept art, 8k resolution, volumetric lighting, sharp lineart, studio masterpiece" style="flex:1;min-width:260px;" />
+          <button type="submit" class="tbl-btn excl-on">🎨 Simpan Gaya Gambar Terlatih</button>
+        </form>
+      </div>
+
+      <!-- 3. LATIH MULTIMODAL (GAMBAR + TEKS) -->
+      <div class="admin-section-card">
+        <h4>🖼️ 3. Latih Pemahaman Gambar (Vision) & Standar Jawaban Teks</h4>
+        <form id="addTrainingForm" class="auth-form">
+          <div class="form-group">
+            <label>Upload Gambar Contoh Latihan (Opsional — untuk melatih AI membaca gambar/diagram/dokumen)</label>
+            <input type="file" id="trainImageFileInput" accept="image/*" onchange="handleTrainImageSelect(event)" style="padding:8px;background:#202024;border-radius:10px;border:1px solid rgba(255,255,255,0.1);color:#a1a1aa;" />
+            <div id="trainImagePreviewWrap" style="display:none;margin-top:6px;">
+              <img id="trainImagePreviewImg" src="" alt="Preview Latih" style="max-height:110px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);" />
+              <button type="button" class="tbl-btn danger" onclick="clearTrainImage()" style="margin-left:8px;">Hapus Gambar</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Contoh Pertanyaan / Skenario Visual User</label>
+            <input type="text" id="trainPromptInput" placeholder="Contoh: Analisis struktur anatomi gambar ini / Buatkan analisis hukum..." required />
+          </div>
+
+          <div class="form-group">
+            <label>Standar Jawaban Ideal Kelas Frontier yang Harus Ditiru AI</label>
+            <textarea id="trainIdealOutput" rows="4" placeholder="Tulis struktur, kedalaman analisis, dan format jawaban kelas atas..." required style="padding:10px;border-radius:12px;background:#202024;border:1px solid rgba(255,255,255,0.1);color:#f4f4f5;font-family:inherit;font-size:13.5px;"></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary-full">💾 Simpan & Latih Model Multimodal Sekarang</button>
+        </form>
+      </div>
+
+      <!-- 4. DAFTAR DATASET TERLATIH -->
+      <div class="admin-section-card">
+        <h4>🗂️ 4. Dataset Terlatih di Cloud (<span id="trainedCountBadge">0</span> Contoh Aktif)</h4>
+        <div id="trainedDatasetList" style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 52 FEATURES CATALOG MODAL -->
+  <div class="modal-overlay" id="featuresModalOverlay">
+    <div class="modal-card modal-xl">
+      <div class="modal-header">
+        <div>
+          <h3>✨ Katalog 52 Fitur & AI Agent FREON</h3>
+          <p class="modal-sub">Pilih kategori fitur untuk langsung menjalankan perintah cerdas</p>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeFeaturesModal()">✕</button>
+      </div>
+      <div class="cat-tabs-bar">
+        <button type="button" class="cat-tab active" data-cat="pintar" onclick="switchFeatureTab('pintar')">🧠 Pintar & Agent</button>
+        <button type="button" class="cat-tab" data-cat="produktivitas" onclick="switchFeatureTab('produktivitas')">📊 Produktivitas</button>
+        <button type="button" class="cat-tab" data-cat="kreatif" onclick="switchFeatureTab('kreatif')">🎨 Kreatif</button>
+        <button type="button" class="cat-tab" data-cat="eksklusif" onclick="switchFeatureTab('eksklusif')">💎 Eksklusif</button>
+        <button type="button" class="cat-tab" data-cat="premium" onclick="switchFeatureTab('premium')">👑 Premium</button>
+      </div>
+      <div class="tier-banner" id="tierStatusBanner"></div>
+      <div class="feature-cards-grid" id="featureCardsGrid"></div>
+    </div>
+  </div>
+
+  <!-- TIER LOCK MODAL -->
+  <div class="modal-overlay" id="lockModalOverlay">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h3 id="lockModalTitle">🔒 Fitur Terkunci</h3>
+        <button type="button" class="modal-close-btn" onclick="closeLockModal()">✕</button>
+      </div>
+      <div class="lock-modal-body">
+        <div class="lock-big-icon" id="lockModalIcon">💎</div>
+        <h4 id="lockModalHeading">Memerlukan Akses Paket</h4>
+        <p id="lockModalDesc">Hubungi pengelola untuk mengaktifkan paket ini.</p>
+        <div class="lock-modal-actions">
+          <button type="button" class="btn-primary-full" id="btnRequestTierUnlock">📩 Minta Aktifkan</button>
+          <button type="button" class="wa-ghost-btn" onclick="openWhatsAppHelp()">💬 Chat Admin di WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN WARNING POPUP -->
+  <div class="modal-overlay" id="warningModalOverlay">
+    <div class="modal-card modal-sm warning-border">
+      <div class="modal-header">
+        <h3>⚠️ Pesan Peringatan Pengelola</h3>
+      </div>
+      <div class="warning-body" id="warningMessageContent"></div>
+      <button type="button" class="btn-primary-full" onclick="acknowledgeAdminWarning()">Saya Mengerti</button>
+    </div>
+  </div>
+
+  <!-- FOUNDER & CO-FOUNDER CONTROL PANEL MODAL -->
+  <div class="modal-overlay" id="adminModalOverlay">
+    <div class="modal-card modal-xxl">
+      <div class="modal-header">
+        <div>
+          <h3>👑 FREON Executive Control Panel</h3>
+          <p class="modal-sub">Broadcast Pengumuman Update Link ke Semua Akun, Manajemen 5 Founder & Customer</p>
+        </div>
+        <button type="button" class="modal-close-btn" id="btnCloseAdminModal">✕</button>
+      </div>
+
+      <!-- BROADCAST PENGUMUMAN & LINK BARU KE SEMUA AKUN -->
+      <div class="admin-section-card" style="border-color:rgba(217,119,87,0.45);background:rgba(217,119,87,0.06);">
+        <h4>📢 Pengumuman Global Founder & Info Pindah Link Update (Semua Akun)</h4>
+        <p style="font-size:12px;color:#a1a1aa;margin-bottom:10px;">
+          Pesan & link ini otomatis tampil di layar <strong>semua Customer, Co-Founder, Founder, serta halaman Login</strong> saat aplikasi diperbarui atau beralih ke link baru.
+        </p>
+        <form id="founderBroadcastForm" class="inline-admin-form">
+          <input type="text" id="broadcastMsgInput" placeholder="Contoh: FREON AI v2.2 telah hadir! Silakan beralih ke link terbaru di samping..." style="flex:2;min-width:240px;" />
+          <input type="url" id="broadcastUrlInput" placeholder="https://link-baru-freon.com (opsional)" style="flex:1;min-width:200px;" />
+          <button type="submit" class="tbl-btn excl-on">📢 Kirim ke Semua Akun</button>
+          <button type="button" class="tbl-btn danger" onclick="clearFounderBroadcast()">🗑️ Hapus Info</button>
+        </form>
+      </div>
+
+      <div class="admin-kpi-grid">
+        <div class="kpi-box">
+          <span class="kpi-label">KODE AKTIVASI 1X PAKAI</span>
+          <div class="kpi-val-row">
+            <strong class="kpi-code" id="adminActivationCodeDisplay">Memuat...</strong>
+            <div class="kpi-btns">
+              <button type="button" class="tbl-btn" onclick="copyActivationCode()">Salin</button>
+              <button type="button" class="tbl-btn" onclick="regenerateNewActivationCode()">Acak</button>
+              <button type="button" class="tbl-btn" onclick="changeActivationCodeManual()">Edit</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-box">
+          <span class="kpi-label">WHATSAPP BANTUAN <small id="waLockNote"></small></span>
+          <div class="kpi-val-row">
+            <strong class="kpi-wa" id="adminWaDisplay">62881010962506</strong>
+            <button type="button" class="tbl-btn" id="btnSetWaFounderOnly" onclick="configureWhatsAppNumber()">✏️ Ubah Nomor WA</button>
+          </div>
+        </div>
+
+        <div class="kpi-box">
+          <span class="kpi-label">KAPASITAS TIM INTI</span>
+          <div class="kpi-val-row">
+            <strong id="founderSlotBadge">Slot Founder Utama: 1 / 5</strong>
+            <button type="button" class="tbl-btn danger" onclick="resetAllCustomerTiers()">Reset Semua Paket</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KELOLA FOUNDER & CO-FOUNDER -->
+      <div class="admin-section-card">
+        <h4>🛡️ Tim Pengelola (Founder Utama & Co-Founder)</h4>
+        <form id="addAdminForm" class="inline-admin-form">
+          <input type="text" id="newAdminUser" placeholder="Username pengelola baru..." required />
+          <input type="text" id="newAdminPass" placeholder="Password..." required />
+          <select id="newAdminTierSelect">
+            <option value="cofounder">🤝 Co-Founder</option>
+            <option value="founder">👑 Founder Utama (Maks 5)</option>
+          </select>
+          <button type="submit" class="tbl-btn excl-on">+ Tambah Pengelola</button>
+        </form>
+        <div class="table-scroll">
+          <table class="dash-table">
+            <thead>
+              <tr><th>Username</th><th>Password</th><th>Jabatan</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="adminTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- KELOLA CUSTOMER -->
+      <div class="admin-section-card">
+        <h4>👥 Database Customer & Paket</h4>
+        <form id="addCustomerForm" class="inline-admin-form">
+          <input type="text" id="newCustFullName" placeholder="Nama Lengkap Customer..." required />
+          <input type="text" id="newCustPass" placeholder="Password awal..." required />
+          <input type="number" id="newCustQuota" value="20000" placeholder="Kuota Token" required />
+          <button type="submit" class="tbl-btn prem-on">+ Buat Akun Customer</button>
+        </form>
+        <div class="table-scroll">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Nama Lengkap</th><th>Username & UID</th><th>Password</th><th>Kuota</th>
+                <th>Eksklusif</th><th>Premium</th><th>Status</th><th>Kontrol</th>
+              </tr>
+            </thead>
+            <tbody id="customerTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANIME VIDEO CALL MODAL -->
+  <div class="modal-overlay" id="videoCallModalOverlay">
+    <div class="modal-card modal-xl vc-modal-shell">
+      <div class="modal-header">
+        <div class="vc-header-info">
+          <span class="live-rec-dot"></span>
+          <h3>📹 Video Call Interaktif — Naruto & Hinata</h3>
+        </div>
+        <div class="vc-speaker-pills">
+          <button type="button" class="mini-chip-btn active" id="vcSelectBoth" onclick="setActiveCallSpeaker('both')">Berdua</button>
+          <button type="button" class="mini-chip-btn" id="vcSelectNaruto" onclick="setActiveCallSpeaker('naruto')">Naruto</button>
+          <button type="button" class="mini-chip-btn" id="vcSelectHinata" onclick="setActiveCallSpeaker('hinata')">Hinata</button>
+          <button type="button" class="mini-chip-btn active" id="vcAutoLoopBtn" onclick="toggleCallAutoLoop()">🔄 Obrolan Otomatis: ON</button>
+        </div>
+      </div>
+
+      <div class="vc-stage">
+        <canvas id="animeCallCanvas" width="760" height="430"></canvas>
+        <div class="vc-pip-box">
+          <video id="vcLocalVideo" autoplay playsinline muted></video>
+          <div class="vc-cam-off-overlay" id="vcCamOffOverlay"><span>📷 Kamera Siap</span></div>
+          <span class="vc-pip-label" id="vcPipUserLabel">Anda</span>
+        </div>
+        <div class="vc-subtitle-bar" id="vcSubtitleBar">Menghubungkan panggilan...</div>
+      </div>
+
+      <form class="vc-text-bar" onsubmit="sendTextInVideoCall(event)">
+        <input type="text" id="vcTextInput" placeholder="Atau ketik pesan ke Naruto & Hinata..." />
+        <button type="submit" class="tbl-btn excl-on">Kirim</button>
+      </form>
+
+      <div class="vc-controls-bar">
+        <button type="button" class="vc-ctrl-btn" id="vcMuteBtn" onclick="toggleCallMute()">
+          <span id="vcMuteIcon">🎤</span><span id="vcMuteText">Mute</span>
+        </button>
+        <button type="button" class="vc-ctrl-btn" id="vcCamBtn" onclick="toggleCallCamera()">
+          <span id="vcCamIcon">📹</span><span id="vcCamText">Matikan Kamera</span>
+        </button>
+        <button type="button" class="vc-ctrl-btn talk-btn" onclick="startVoiceTalkInCall(true)">
+          <span>🎙️</span><span id="vcTalkText">Bicara Sekarang</span>
+        </button>
+        <button type="button" class="vc-ctrl-btn end-btn" onclick="closeAnimeVideoCall()">
+          <span>📞</span><span>Akhiri</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    function toggleArtifactDrawer() {
+      document.getElementById("artifactDrawer").classList.toggle("open");
+    }
+
+    function loadLatestCodeToArtifact() {
+      const codes = document.querySelectorAll(".code-wrapper pre");
+      if (!codes.length) {
+        alert("Belum ada blok kode HTML di percakapan ini. Minta AI membuat aplikasi web atau game HTML terlebih dahulu!");
+        return;
+      }
+      const latestCode = codes[codes.length - 1].innerText;
+      const drawer = document.getElementById("artifactDrawer");
+      const emptyState = document.querySelector(".artifact-empty-state");
+      const iframe = document.getElementById("artifactIframe");
+      drawer.classList.add("open");
+      if (emptyState) emptyState.style.display = "none";
+      iframe.style.display = "block";
+      iframe.srcdoc = latestCode;
+    }
+  </script>
+</body>
+</html>
